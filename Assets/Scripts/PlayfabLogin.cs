@@ -1,25 +1,33 @@
 using PlayFab;
 using PlayFab.ClientModels;
 using UnityEngine;
+using System;
 public class PlayfabLogin : MonoBehaviour
 {
+    private const string AuthGuidKey = "auth_guid_key";
     public void Start()
     {
-        // Here we need to check whether TitleId property is configured in settings ornot
-    if (string.IsNullOrEmpty(PlayFabSettings.staticSettings.TitleId))
-        {
-            /*
-            * If not we need to assign it to the appropriate variable manually
-            * Otherwise we can just remove this if statement at all
-            */
-            PlayFabSettings.staticSettings.TitleId = "164CE";
-        }
+        if (string.IsNullOrEmpty(PlayFabSettings.staticSettings.TitleId))
+            {
+                PlayFabSettings.staticSettings.TitleId = "164CE";
+            }
+
+        var needCreation = PlayerPrefs.HasKey(AuthGuidKey);
+        var id = PlayerPrefs.GetString(AuthGuidKey, Guid.NewGuid().ToString());
+
         var request = new LoginWithCustomIDRequest
         {
-            CustomId = "Player 1",
-            CreateAccount = true
+            CustomId = id,
+            CreateAccount = !needCreation
         };
-        PlayFabClientAPI.LoginWithCustomID(request, OnLoginSuccess, OnLoginFailure);
+
+        PlayFabClientAPI.LoginWithCustomID(request,
+            result =>
+            {
+                PlayerPrefs.SetString(AuthGuidKey, id);
+                OnLoginSuccess(result);
+            },
+             OnLoginFailure);
     }
     private void OnLoginSuccess(LoginResult result)
     {
