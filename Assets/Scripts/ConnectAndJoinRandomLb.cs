@@ -15,6 +15,14 @@ public class ConnectAndJoinRandomLb : MonoBehaviour,IConnectionCallbacks, IMatch
 
     private LoadBalancingClient _lbc;
 
+    private const string GAME_MODE_KEY = "gm";
+    private const string AI_MODE_KEY = "ai";
+
+    private const string MAP_PROP_KEY = "C0";
+    private const string GOLD_PROP_KEY = "C1";
+
+    private TypedLobby _sqlLobby = new TypedLobby("customSQLLobby", LobbyType.SqlLobby);
+
     private void Start()
     {
         _lbc = new LoadBalancingClient();
@@ -45,7 +53,26 @@ public class ConnectAndJoinRandomLb : MonoBehaviour,IConnectionCallbacks, IMatch
     public void OnConnectedToMaster()
     {
         Debug.Log("OnConnectedToMaster");
-        _lbc.OpJoinRandomRoom();
+        //_lbc.OpJoinRandomRoom();
+        var roomOptions = new RoomOptions()
+        {
+            MaxPlayers = 12,
+            PublishUserId=true,
+            CustomRoomPropertiesForLobby = new[] { MAP_PROP_KEY,GOLD_PROP_KEY },
+            CustomRoomProperties=new ExitGames.Client.Photon.Hashtable() 
+            { 
+                { MAP_PROP_KEY, "Map3" }, 
+                { GOLD_PROP_KEY,400} 
+            }
+        };
+        var enterRoomParams = new EnterRoomParams() 
+        { 
+            RoomName = "NewRoom", 
+            RoomOptions = roomOptions,
+            ExpectedUsers=new[] {"6565"},
+            Lobby=_sqlLobby
+        };
+        _lbc.OpCreateRoom(enterRoomParams);
     }
 
     public void OnCreatedRoom()
@@ -75,6 +102,14 @@ public class ConnectAndJoinRandomLb : MonoBehaviour,IConnectionCallbacks, IMatch
 
     public void OnJoinedLobby()
     {
+        Debug.Log("OnJoinedLobby");
+        var sqlLobbyFilter = $"{MAP_PROP_KEY} = Map3 AND {GOLD_PROP_KEY} BETWEEN 300 AND 500";
+        var opJoinRandomRoomParams = new OpJoinRandomRoomParams()
+        {
+            SqlLobbyFilter = sqlLobbyFilter
+        };
+
+        _lbc.OpJoinRandomRoom(opJoinRandomRoomParams);
     }
 
     public void OnJoinedRoom()
