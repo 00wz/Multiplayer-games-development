@@ -32,7 +32,7 @@ public class LobbyController : ILobbyCallbacks,IDisposable
     {
         _lbc = lbc;
         _lobbyView=GameObject.Instantiate<LobbyView>(Resources.Load<LobbyView>("LobbyView"),canvas.transform);
-        _roomViewPrefab = Resources.Load<RoomView>("RoomView");
+        _roomViewPrefab = Resources.Load<RoomView>("Room");
         _onJoinCullback = onJoin;
     }
 
