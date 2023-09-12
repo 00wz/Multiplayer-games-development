@@ -26,6 +26,7 @@ public class PhotonController : MonoBehaviour, IConnectionCallbacks, IMatchmakin
     {
         _lbc = new LoadBalancingClient();
         _lbc.AddCallbackTarget(this);
+        _lbc.StateChanged += OnStateChanged;
 
         _lbc.ConnectUsingSettings(_serverSettings.AppSettings);
 
@@ -36,6 +37,7 @@ public class PhotonController : MonoBehaviour, IConnectionCallbacks, IMatchmakin
     private void OnDestroy()
     {
         _lbc.RemoveCallbackTarget(this);
+        _lbc.StateChanged -= OnStateChanged;
     }
 
     private void Update()
@@ -44,9 +46,12 @@ public class PhotonController : MonoBehaviour, IConnectionCallbacks, IMatchmakin
             return;
 
         _lbc.Service();
+    }
 
-        var state = _lbc.State.ToString();
-        _stateUiText.text = state;
+    private void OnStateChanged(ClientState arg1, ClientState arg2)
+    {
+        //var state = _lbc.State.ToString();
+        _stateUiText.text = arg2.ToString();
     }
 
     public void OnConnected()
