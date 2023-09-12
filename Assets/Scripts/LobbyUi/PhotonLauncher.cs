@@ -135,6 +135,16 @@ public class PhotonLauncher : MonoBehaviourPunCallbacks
         Debug.Log("OnJoinedRoom");
         _lobbyController.enable = false;
         _newRoomFieldController.enable = false;
+
+        if (PhotonNetwork.CurrentRoom.PlayerCount == 1)
+        {
+            Debug.Log("We load the 'Room for 1' ");
+
+            // #Critical
+            // Load the Room Level. 
+            PhotonNetwork.LoadLevel("FirstScene");
+
+        }
     }
 
     public override void OnJoinRoomFailed(short returnCode, string message)
