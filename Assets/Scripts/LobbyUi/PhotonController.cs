@@ -1,11 +1,10 @@
 using Photon.Realtime;
 using Photon.Pun;
-using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using TMPro;
 
-public class ConnectAndJoinRandomLb : MonoBehaviour,IConnectionCallbacks, IMatchmakingCallbacks,ILobbyCallbacks
+public class PhotonController : MonoBehaviour, IConnectionCallbacks, IMatchmakingCallbacks, ILobbyCallbacks
 {
     [SerializeField]
     private ServerSettings _serverSettings;
@@ -13,15 +12,14 @@ public class ConnectAndJoinRandomLb : MonoBehaviour,IConnectionCallbacks, IMatch
     [SerializeField]
     private TMP_Text _stateUiText;
 
+    [SerializeField]
+    private Canvas _canvas;
+
+    private LobbyController _lobbyController;
+    private NewRoomFieldController _newRoomFieldController;
+
     private LoadBalancingClient _lbc;
 
-    private const string GAME_MODE_KEY = "gm";
-    private const string AI_MODE_KEY = "ai";
-
-    private const string MAP_PROP_KEY = "C0";
-    private const string GOLD_PROP_KEY = "C1";
-
-    private TypedLobby _sqlLobby = new TypedLobby("customSQLLobby", LobbyType.SqlLobby);
     private TypedLobby _defaultLobby = new TypedLobby("defaultLobby", LobbyType.Default);
 
     private void Start()
@@ -30,6 +28,9 @@ public class ConnectAndJoinRandomLb : MonoBehaviour,IConnectionCallbacks, IMatch
         _lbc.AddCallbackTarget(this);
 
         _lbc.ConnectUsingSettings(_serverSettings.AppSettings);
+
+        _lobbyController = new LobbyController(_lbc, JoinRoom,_canvas);
+        _newRoomFieldController = new NewRoomFieldController(CreateRoom,_canvas);
     }
 
     private void OnDestroy()
@@ -47,6 +48,7 @@ public class ConnectAndJoinRandomLb : MonoBehaviour,IConnectionCallbacks, IMatch
         var state = _lbc.State.ToString();
         _stateUiText.text = state;
     }
+
     public void OnConnected()
     {
     }
@@ -54,30 +56,21 @@ public class ConnectAndJoinRandomLb : MonoBehaviour,IConnectionCallbacks, IMatch
     public void OnConnectedToMaster()
     {
         Debug.Log("OnConnectedToMaster");
-        //_lbc.OpJoinRandomRoom();
-        //_lbc.OpJoinLobby(_sqlLobby);
         _lbc.OpJoinLobby(_defaultLobby);
+        _newRoomFieldController.enable = true;
     }
 
-    private void CreateRoom()
+    private void JoinRoom(string roomName)
     {
-        var roomOptions = new RoomOptions()
+        _lbc.OpJoinRoom(new EnterRoomParams() { RoomName = roomName });
+    }
+
+    private void CreateRoom(string roomName)
+    {
+        var enterRoomParams = new EnterRoomParams()
         {
-            MaxPlayers = 12,
-            PublishUserId=true,
-            CustomRoomPropertiesForLobby = new[] { MAP_PROP_KEY,GOLD_PROP_KEY },
-            CustomRoomProperties=new ExitGames.Client.Photon.Hashtable() 
-            { 
-                { MAP_PROP_KEY, "Map3" }, 
-                { GOLD_PROP_KEY,400} 
-            }
-        };
-        var enterRoomParams = new EnterRoomParams() 
-        { 
-            RoomName = "NewRoom", 
-            RoomOptions = roomOptions,
-            ExpectedUsers=new[] {"6565"},
-            Lobby=_sqlLobby
+            RoomName = roomName,
+            Lobby = _defaultLobby
         };
         _lbc.OpCreateRoom(enterRoomParams);
     }
@@ -89,6 +82,7 @@ public class ConnectAndJoinRandomLb : MonoBehaviour,IConnectionCallbacks, IMatch
 
     public void OnCreateRoomFailed(short returnCode, string message)
     {
+        Debug.Log($"OnCreateRoomFailed\n{message}");
     }
 
     public void OnCustomAuthenticationFailed(string debugMessage)
@@ -110,41 +104,34 @@ public class ConnectAndJoinRandomLb : MonoBehaviour,IConnectionCallbacks, IMatch
     public void OnJoinedLobby()
     {
         Debug.Log("OnJoinedLobby");
-        //_lbc.OpGetGameList(_sqlLobby, "");
+        _lobbyController.enable = true;
     }
 
-    private void JoinRoomInSQLLobby()
-    {
-        var sqlLobbyFilter = $"{MAP_PROP_KEY} = Map3 AND {GOLD_PROP_KEY} BETWEEN 300 AND 500";
-        var opJoinRandomRoomParams = new OpJoinRandomRoomParams()
-        {
-            SqlLobbyFilter = sqlLobbyFilter
-        };
-
-        _lbc.OpJoinRandomRoom(opJoinRandomRoomParams);
-    }
 
     public void OnJoinedRoom()
     {
         Debug.Log("OnJoinedRoom");
+        _lobbyController.enable = false;
+        _newRoomFieldController.enable = false;
     }
 
     public void OnJoinRandomFailed(short returnCode, string message)
     {
-        Debug.Log("OnJoinRandomFailed");
-        _lbc.OpCreateRoom(new EnterRoomParams());
     }
 
     public void OnJoinRoomFailed(short returnCode, string message)
     {
+        Debug.Log($"OnJoinRoomFailed\n{message}");
     }
 
     public void OnLeftLobby()
     {
+        _lobbyController.enable = false;
     }
 
     public void OnLeftRoom()
     {
+        _newRoomFieldController.enable = true;
     }
 
     public void OnLobbyStatisticsUpdate(List<TypedLobbyInfo> lobbyStatistics)
@@ -160,3 +147,4 @@ public class ConnectAndJoinRandomLb : MonoBehaviour,IConnectionCallbacks, IMatch
         Debug.Log("OnRoomListUpdate");
     }
 }
+
