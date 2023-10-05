@@ -29,11 +29,11 @@ namespace Photon.Pun.Demo.PunBasics
 
 		[Tooltip("The prefab to use for representing the player")]
 		[SerializeField]
-		private GameObject playerPrefab;		
-		
-		[Tooltip("The prefab to use for representing the player")]
+		private GameObject playerPrefab;
+
+		[Tooltip("Main Virtual Camera")]
 		[SerializeField]
-		private CinemachineVirtualCamera _virtualCamera;
+		private CamerManager camerManager;
 
 		private const string CAMERA_RESOURSES_PATH = "CameraRoot";
 		#endregion
@@ -46,11 +46,7 @@ namespace Photon.Pun.Demo.PunBasics
 
 			if (PhotonNetwork.InRoom && instance == null)
 			{
-				// we're in a room. spawn a character for the local player. it gets synced by using PhotonNetwork.Instantiate
-				instance = PhotonNetwork.Instantiate(this.playerPrefab.name, new Vector3(0f, 5f, 0f), Quaternion.identity, 0);
-				PlayerClass player=instance.GetComponent<PlayerClass>();
-				player.TakeControl();
-				_virtualCamera.m_Follow = player.PlayerCameraRoot.transform;
+				SpawnPlayer();
 			}
 			else
 			{
@@ -83,11 +79,7 @@ namespace Photon.Pun.Demo.PunBasics
 			{
 				Debug.LogFormat("We are Instantiating LocalPlayer from {0}", SceneManagerHelper.ActiveSceneName);
 
-				// we're in a room. spawn a character for the local player. it gets synced by using PhotonNetwork.Instantiate
-				instance = PhotonNetwork.Instantiate(this.playerPrefab.name, new Vector3(0f, 5f, 0f), Quaternion.identity, 0);
-				PlayerClass player = instance.GetComponent<PlayerClass>();
-				player.TakeControl();
-				_virtualCamera.m_Follow = player.PlayerCameraRoot.transform;
+				SpawnPlayer();
 			}
 		}
 		/*
@@ -148,7 +140,14 @@ namespace Photon.Pun.Demo.PunBasics
 		#endregion
 
 		#region Private Methods
-
+		private void SpawnPlayer()
+        {
+			// we're in a room. spawn a character for the local player. it gets synced by using PhotonNetwork.Instantiate
+			instance = PhotonNetwork.Instantiate(this.playerPrefab.name, new Vector3(0f, 5f, 0f), Quaternion.identity, 0);
+			PlayerClass player = instance.GetComponent<PlayerClass>();
+			player.TakeControl();
+			camerManager.SetTarget(player.PlayerCameraRoot.transform);
+		}
 		void LoadArena()
 		{
 			if (!PhotonNetwork.IsMasterClient)
