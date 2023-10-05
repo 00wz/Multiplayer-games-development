@@ -15,6 +15,9 @@ public class PhotonLauncher : MonoBehaviourPunCallbacks
     [SerializeField]
     private Canvas _canvas;
 
+    [SerializeField]
+    private string SceneNameLoad = "FirstScene";
+
     private LobbyController _lobbyController;
     private NewRoomFieldController _newRoomFieldController;
 
@@ -142,7 +145,7 @@ public class PhotonLauncher : MonoBehaviourPunCallbacks
 
             // #Critical
             // Load the Room Level. 
-            PhotonNetwork.LoadLevel("FirstScene");
+            PhotonNetwork.LoadLevel(SceneNameLoad);
 
         }
     }

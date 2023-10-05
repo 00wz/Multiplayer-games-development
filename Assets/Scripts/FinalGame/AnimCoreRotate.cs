@@ -8,10 +8,6 @@ using UnityEngine.InputSystem;
 
 namespace StarterAssets
 {
-    [RequireComponent(typeof(CharacterController))]
-#if ENABLE_INPUT_SYSTEM 
-    [RequireComponent(typeof(PlayerInput))]
-#endif
     public class AnimCoreRotate : MonoBehaviour
     {
         [Tooltip("How fast the character turns to face movement direction")]
@@ -25,24 +21,16 @@ namespace StarterAssets
         public AudioClip[] FootstepAudioClips;
         [Range(0, 1)] public float FootstepAudioVolume = 0.5f;
 
+        //[Tooltip("Time required to pass before entering the fall state. Useful for walking down stairs")]
+        //public float FallTimeout = 0.15f;
+
         [Header("Player Grounded")]
         [Tooltip("If the character is grounded or not. Not part of the CharacterController built in grounded check")]
         public bool Grounded = true;
 
-        [Tooltip("Useful for rough ground")]
-        public float GroundedOffset = -0.14f;
-
-        [Tooltip("The radius of the grounded check. Should match the radius of the CharacterController")]
-        public float GroundedRadius = 0.28f;
-
-        [Tooltip("What layers the character uses as ground")]
-        public LayerMask GroundLayers;
-
-        // player
-        private float _targetRotation = 0.0f;
-
         // animation IDs
-        private int _animIDSpeed;
+        private int _animIDForwardSpeed;
+        private int _animIDRightSpeed;
         private int _animIDGrounded;
         private int _animIDJump;
         private int _animIDFreeFall;
@@ -53,10 +41,12 @@ namespace StarterAssets
         private Vector3 _lastPosition;
         private Vector3 _currentSpeed;
         private Vector3 _smoothedSpeed;
+        private GroundedCheck _groundedCheck;
 
         private void Start()
         {
             _animator = GetComponent<Animator>();
+            _groundedCheck = GetComponent<GroundedCheck>();
 
             AssignAnimationIDs();
 
@@ -83,7 +73,8 @@ namespace StarterAssets
 
         private void AssignAnimationIDs()
         {
-            _animIDSpeed = Animator.StringToHash("Speed");
+            _animIDForwardSpeed = Animator.StringToHash("ForwardSpeed");
+            _animIDRightSpeed = Animator.StringToHash("RightSpeed");
             _animIDGrounded = Animator.StringToHash("Grounded");
             _animIDJump = Animator.StringToHash("Jump");
             _animIDFreeFall = Animator.StringToHash("FreeFall");
@@ -92,11 +83,7 @@ namespace StarterAssets
 
         private void GroundedCheck()
         {
-            Vector3 spherePosition = new Vector3(transform.position.x, transform.position.y - GroundedOffset,
-                transform.position.z);
-
-            bool _currentGrounded = Physics.CheckSphere(spherePosition, GroundedRadius, GroundLayers,
-                QueryTriggerInteraction.Ignore);
+            bool _currentGrounded = _groundedCheck.Grounded;
             if(Grounded&&!_currentGrounded)
             {
                 _animator.SetBool(_animIDGrounded, false);
@@ -117,31 +104,11 @@ namespace StarterAssets
         private void Move()
         {
             //float absoluteHorizontalSpeed = new Vector3(_currentSpeed.x, 0.0f, _currentSpeed.z).magnitude;
-            float smoothedHorizontalSpeed = new Vector3(_smoothedSpeed.x, 0.0f, _smoothedSpeed.z).magnitude;
+            Vector3 smoothedHorizontalSpeed =transform.InverseTransformVector(_smoothedSpeed);
 
-                _targetRotation = Mathf.Atan2(_smoothedSpeed.x, _smoothedSpeed.z) * Mathf.Rad2Deg;
-                transform.rotation = Quaternion.Euler(0.0f, _targetRotation, 0.0f);
-                /*float rotation = Mathf.SmoothDampAngle(transform.eulerAngles.y, _targetRotation, ref _rotationVelocity,
-    RotationSmoothTime);
-                transform.rotation = Quaternion.Euler(0.0f, rotation, 0.0f);*/
-
-                //_animator.SetFloat(_animIDSpeed, absoluteHorizontalSpeed);
-                _animator.SetFloat(_animIDSpeed, smoothedHorizontalSpeed<0.01f?0f:smoothedHorizontalSpeed);
-                _animator.SetFloat(_animIDMotionSpeed, 1f);
-        }
-
-        private void OnDrawGizmosSelected()
-        {
-            Color transparentGreen = new Color(0.0f, 1.0f, 0.0f, 0.35f);
-            Color transparentRed = new Color(1.0f, 0.0f, 0.0f, 0.35f);
-
-            if (Grounded) Gizmos.color = transparentGreen;
-            else Gizmos.color = transparentRed;
-
-            // when selected, draw a gizmo in the position of, and matching radius of, the grounded collider
-            Gizmos.DrawSphere(
-                new Vector3(transform.position.x, transform.position.y - GroundedOffset, transform.position.z),
-                GroundedRadius);
+                _animator.SetFloat(_animIDForwardSpeed, Mathf.Abs(smoothedHorizontalSpeed.z)<0.01f?0f:smoothedHorizontalSpeed.z);
+                _animator.SetFloat(_animIDRightSpeed, Mathf.Abs(smoothedHorizontalSpeed.x)<0.01f?0f:smoothedHorizontalSpeed.x);
+                //_animator.SetFloat(_animIDMotionSpeed, 1f);
         }
 
         private void OnFootstep(AnimationEvent animationEvent)
