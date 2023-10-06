@@ -51,20 +51,13 @@ public class CamerManager : MonoBehaviour
 #endif
         }
     }
-    /*
+    
 	private bool _aimingIsEnabled;
-	public bool AimingIsEnabled
+	public void AimingIsEnabled(bool value)
     {
-        get
-        {
-			return _aimingIsEnabled;
-        }
-        set
-        {
-
-        }
+        _aimingIsEnabled = value;
     }
-    */
+    
     /*
     private void Awake()
     {
@@ -80,7 +73,7 @@ public class CamerManager : MonoBehaviour
 
     private void Update()
     {
-        if (Inputs.Instance.aim)
+        if (_aimingIsEnabled&& Inputs.Instance.aim)
         {
             VirtualCameraAim.gameObject.SetActive(true);
             Crosshair.SetActive(true);

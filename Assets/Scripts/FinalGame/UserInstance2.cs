@@ -3,6 +3,7 @@ using UnityEngine.SceneManagement;
 
 using Photon.Realtime;
 using Cinemachine;
+using StarterAssets;
 
 namespace Photon.Pun.Demo.PunBasics
 {
@@ -25,7 +26,7 @@ namespace Photon.Pun.Demo.PunBasics
 
 		#region Private Fields
 
-		private GameObject instance;
+		private GameObject localPlayer;
 
 		[Tooltip("The prefab to use for representing the player")]
 		[SerializeField]
@@ -35,38 +36,48 @@ namespace Photon.Pun.Demo.PunBasics
 		[SerializeField]
 		private CamerManager camerManager;
 
-		private const string CAMERA_RESOURSES_PATH = "CameraRoot";
+		[Tooltip("UIView")]
+		[SerializeField]
+		private UIView UIView;
+
 		#endregion
 
 		#region MonoBehaviour CallBacks
-
+		/*
 		void Start()
 		{
-			Instance = this;
-
-			if (PhotonNetwork.InRoom && instance == null)
-			{
-				SpawnPlayer();
-			}
-			else
-			{
-				Debug.LogFormat("Ignoring scene load for {0}", SceneManagerHelper.ActiveSceneName);
-			}
-
+			UIView.SetSpectetorState();
+			camerManager.AimingIsEnabled(false);
 		}
-		/*
+		*/
 		/// <summary>
 		/// MonoBehaviour method called on GameObject by Unity on every frame.
 		/// </summary>
 		void Update()
 		{
+			if(PhotonNetwork.InRoom && localPlayer == null)
+            {
+				UIView.SetSpectetorState();
+				camerManager.AimingIsEnabled(false);
+                if (Inputs.Instance.jump)
+                {
+					SpawnPlayer();
+                }
+			}
+			else
+            {
+				UIView.SetGameState();
+				camerManager.AimingIsEnabled(true);
+			}
+			/*
 			// "back" button of phone equals "Escape". quit app if that's pressed
 			if (Input.GetKeyDown(KeyCode.Escape))
 			{
 				QuitApplication();
 			}
+			*/
 		}
-		*/
+		
 		#endregion
 
 		#region Photon Callbacks
@@ -75,7 +86,7 @@ namespace Photon.Pun.Demo.PunBasics
 		{
 			// Note: it is possible that this monobehaviour is not created (or active) when OnJoinedRoom happens
 			// due to that the Start() method also checks if the local player character was network instantiated!
-			if (instance == null)
+			if (localPlayer == null)
 			{
 				Debug.LogFormat("We are Instantiating LocalPlayer from {0}", SceneManagerHelper.ActiveSceneName);
 
@@ -143,8 +154,8 @@ namespace Photon.Pun.Demo.PunBasics
 		private void SpawnPlayer()
         {
 			// we're in a room. spawn a character for the local player. it gets synced by using PhotonNetwork.Instantiate
-			instance = PhotonNetwork.Instantiate(this.playerPrefab.name, new Vector3(0f, 5f, 0f), Quaternion.identity, 0);
-			PlayerClass player = instance.GetComponent<PlayerClass>();
+			localPlayer = PhotonNetwork.Instantiate(this.playerPrefab.name, new Vector3(0f, 5f, 0f), Quaternion.identity, 0);
+			PlayerClass player = localPlayer.GetComponent<PlayerClass>();
 			player.TakeControl();
 			camerManager.SetTarget(player.PlayerCameraRoot.transform);
 		}
