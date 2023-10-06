@@ -46,19 +46,21 @@ public class ShootController : MonoBehaviour
     }
 
     [PunRPC]
-    private void ShootRPC(Vector3 aimDir)
+    private void ShootRPC(Vector3 aimDir, PhotonMessageInfo info)
     {
         GameObject bulletPrefab = BulletPrefab;
         float distance;
         Inputs.Instance.shoot = false;///////
         if(Physics.Raycast(FiringPosition.position,aimDir,out RaycastHit raycastHit, RAYCAST_DISTANCE, LayerMask))
         {
-            if (raycastHit.collider.TryGetComponent<PlayerClass>(out _))
+            if (raycastHit.collider.TryGetComponent<IDamageable>(out _))
             {
                 bulletPrefab = BulletBloodPrefab;
                 ///////
+                //if (PhotonNetwork.IsMasterClient)
+                    Debug.Log(info.Sender.UserId+"  "+info.Sender.ActorNumber);
             }
-            distance = raycastHit.distance;
+            distance = aimDir.magnitude;// raycastHit.distance;
         }
         else
         {

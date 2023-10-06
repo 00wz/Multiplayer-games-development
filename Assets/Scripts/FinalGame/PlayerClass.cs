@@ -1,10 +1,12 @@
+using Photon.Pun;
 using StarterAssets;
 using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class PlayerClass : MonoBehaviour//PlayerRoot
+[RequireComponent(typeof(PhotonView))]
+public class PlayerClass : MonoBehaviour,IDamageable
 {
     [SerializeField]
     public GameObject PlayerCameraRoot;
@@ -14,7 +16,12 @@ public class PlayerClass : MonoBehaviour//PlayerRoot
 
     public event Action<ControllerColliderHit> OnCollision;
     private PlayerController _controller;
+    private PhotonView _photonView;
 
+    private void Awake()
+    {
+        _photonView = GetComponent<PhotonView>();
+    }
     public void TakeControl()
     {
         _controller=GameObject.Instantiate(ControllerPrefab, transform);
@@ -33,5 +40,16 @@ public class PlayerClass : MonoBehaviour//PlayerRoot
         {
             child.gameObject.layer = layer;
         }
+    }
+
+    public void TakeDamage(int value,Photon.Realtime.Player attacker)
+    {
+        _photonView.RPC("TakeDamageRPC", RpcTarget.All,value, attacker);
+    }
+
+    [PunRPC]
+    private void TakeDamageRPC(int value, Photon.Realtime.Player attacker)
+    {
+        
     }
 }
