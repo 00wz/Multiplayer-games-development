@@ -16,7 +16,10 @@ public class ShootController : MonoBehaviour
     [SerializeField]
     public GameObject BulletPrefab;
 
-    private const float RAYCAST_DISTANCE= 999f;
+    [SerializeField]
+    public GameObject BulletBloodPrefab;
+
+    private const float RAYCAST_DISTANCE= 100f;
     private PhotonView _photonView;
     private float _bulletSpeed;
 
@@ -45,8 +48,23 @@ public class ShootController : MonoBehaviour
     [PunRPC]
     private void ShootRPC(Vector3 aimDir)
     {
-        var bullet=Instantiate(BulletPrefab, FiringPosition.position, Quaternion.LookRotation(aimDir, Vector3.up));
-        Destroy(bullet, aimDir.magnitude / _bulletSpeed);
+        GameObject bulletPrefab = BulletPrefab;
+        float distance;
         Inputs.Instance.shoot = false;///////
+        if(Physics.Raycast(FiringPosition.position,aimDir,out RaycastHit raycastHit, RAYCAST_DISTANCE, LayerMask))
+        {
+            if (raycastHit.collider.TryGetComponent<PlayerClass>(out _))
+            {
+                bulletPrefab = BulletBloodPrefab;
+                ///////
+            }
+            distance = raycastHit.distance;
+        }
+        else
+        {
+            distance = RAYCAST_DISTANCE;
+        }
+        var bullet=Instantiate(bulletPrefab, FiringPosition.position, Quaternion.LookRotation(aimDir, Vector3.up));
+        Destroy(bullet, distance / _bulletSpeed);
     }
 }
