@@ -2502,6 +2502,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   PlayerCameraRoot: {fileID: 7385759592229014316}
   ControllerPrefab: {fileID: 7684177348127553437, guid: 6c595acc78dfcc3469916cd40a06a986, type: 3}
+  Health: 100
 --- !u!143 &7385759593253004596
 CharacterController:
   m_ObjectHideFlags: 0
@@ -2616,12 +2617,15 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3c0c4fe5372fe52468491d793eca0f50, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  LayerMask:
+  LayerMaskScreenRaycast:
+    serializedVersion: 2
+    m_Bits: 247
+  LayerMaskBulletTarget:
     serializedVersion: 2
     m_Bits: 4294967295
   FiringPosition: {fileID: 5977202626182855737}
-  BulletPrefab: {fileID: 6863857337172796869, guid: 9fc5deab5fef94d41b92a7112049f302, type: 3}
-  BulletBloodPrefab: {fileID: 6863857337172796869, guid: 40b3258848a085443bc471d04b258a81, type: 3}
+  BulletPrefab: {fileID: 810733913983134852, guid: 9fc5deab5fef94d41b92a7112049f302, type: 3}
+  BulletBloodPrefab: {fileID: 810733913983134852, guid: 40b3258848a085443bc471d04b258a81, type: 3}
 --- !u!1 &7385759593275015336
 GameObject:
   m_ObjectHideFlags: 0

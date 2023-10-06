@@ -8,16 +8,19 @@ using UnityEngine;
 public class ShootController : MonoBehaviour
 {
     [SerializeField]
-    private LayerMask LayerMask;
+    private LayerMask LayerMaskScreenRaycast;
+
+    [SerializeField]
+    private LayerMask LayerMaskBulletTarget;
 
     [SerializeField]
     public Transform FiringPosition;
 
     [SerializeField]
-    public GameObject BulletPrefab;
+    public BulletProjectile BulletPrefab;
 
     [SerializeField]
-    public GameObject BulletBloodPrefab;
+    public BulletProjectile BulletBloodPrefab;
 
     private const float RAYCAST_DISTANCE= 100f;
     private PhotonView _photonView;
@@ -32,7 +35,7 @@ public class ShootController : MonoBehaviour
     {
         Vector2 screenCenterPoint = new Vector2(Screen.width / 2f, Screen.height / 2f);
         Ray ray = Camera.main.ScreenPointToRay(screenCenterPoint);
-        if(Physics.Raycast(ray, out RaycastHit raycastHit, RAYCAST_DISTANCE, LayerMask))
+        if(Physics.Raycast(ray, out RaycastHit raycastHit, RAYCAST_DISTANCE, LayerMaskScreenRaycast))
         {
             return raycastHit.point;
         }
@@ -48,25 +51,22 @@ public class ShootController : MonoBehaviour
     [PunRPC]
     private void ShootRPC(Vector3 aimDir, PhotonMessageInfo info)
     {
-        GameObject bulletPrefab = BulletPrefab;
-        float distance;
+        BulletProjectile bulletPrefab = BulletPrefab;
+        RaycastHit raycastHit;
         Inputs.Instance.shoot = false;///////
-        if(Physics.Raycast(FiringPosition.position,aimDir,out RaycastHit raycastHit, RAYCAST_DISTANCE, LayerMask))
+        if(Physics.Raycast(FiringPosition.position,aimDir,out raycastHit, RAYCAST_DISTANCE, LayerMaskBulletTarget))
         {
-            if (raycastHit.collider.TryGetComponent<IDamageable>(out _))
+            if (raycastHit.collider.TryGetComponent<IDamageable>(out IDamageable damageable))
             {
                 bulletPrefab = BulletBloodPrefab;
-                ///////
-                //if (PhotonNetwork.IsMasterClient)
-                    Debug.Log(info.Sender.UserId+"  "+info.Sender.ActorNumber);
+
+                if (PhotonNetwork.IsMasterClient)
+                    damageable.TakeDamage(1, info.Sender);
             }
-            distance = aimDir.magnitude;// raycastHit.distance;
         }
-        else
-        {
-            distance = RAYCAST_DISTANCE;
-        }
-        var bullet=Instantiate(bulletPrefab, FiringPosition.position, Quaternion.LookRotation(aimDir, Vector3.up));
-        Destroy(bullet, distance / _bulletSpeed);
+
+        var bullet=Instantiate<BulletProjectile>(bulletPrefab, FiringPosition.position, 
+            Quaternion.LookRotation(aimDir, Vector3.up));
+        bullet.Init(raycastHit.point);
     }
 }
