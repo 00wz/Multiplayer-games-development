@@ -49,8 +49,8 @@ namespace StarterAssets
 
         private CharacterController _controller;
         private GameObject _mainCamera;//?????????????????????
-
         private GroundedCheck _groundedObserver;
+        private ShootController _shootController;
         private bool Grounded
         {
             get
@@ -78,6 +78,8 @@ namespace StarterAssets
             if (_controller == null) throw new Exception("CharacterController not found");
             _groundedObserver = GetComponentInParent<GroundedCheck>();
             if(_groundedObserver==null) throw new Exception("GroundedCheck script not found");
+            _shootController = GetComponentInParent<ShootController>();
+            if(_shootController==null) throw new Exception("ShootController script not found");
 
             // reset our timeouts on start
             _jumpTimeoutDelta = JumpTimeout;
@@ -88,6 +90,11 @@ namespace StarterAssets
             JumpAndGravity();
 
             Move();
+
+            if (Inputs.Instance.shoot)
+            {
+                _shootController.Shoot();
+            }
         }
 
         private void Move()

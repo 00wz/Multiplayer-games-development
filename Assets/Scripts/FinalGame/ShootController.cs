@@ -1,8 +1,10 @@
+using Photon.Pun;
 using StarterAssets;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
+[RequireComponent(typeof(PhotonView))]
 public class ShootController : MonoBehaviour
 {
     [SerializeField]
@@ -11,8 +13,19 @@ public class ShootController : MonoBehaviour
     [SerializeField]
     public Transform FiringPosition;
 
+    [SerializeField]
+    public GameObject BulletPrefab;
+
     private const float RAYCAST_DISTANCE= 999f;
-    public Vector3? CalculateTarget()
+    private PhotonView _photonView;
+    private float _bulletSpeed;
+
+    private void Awake()
+    {
+        _photonView = GetComponent<PhotonView>();
+        _bulletSpeed=BulletPrefab.GetComponent<BulletProjectile>().Speed;
+    }
+    public Vector3 CalculateTarget()
     {
         Vector2 screenCenterPoint = new Vector2(Screen.width / 2f, Screen.height / 2f);
         Ray ray = Camera.main.ScreenPointToRay(screenCenterPoint);
@@ -23,11 +36,17 @@ public class ShootController : MonoBehaviour
         return ray.origin + ray.direction * RAYCAST_DISTANCE;
     }
 
-    private void Update()
+    public void Shoot()
     {
-        if (Inputs.Instance.shoot)
-        {
+        Vector3 aimDir = (CalculateTarget() - FiringPosition.position);
+        _photonView.RPC("ShootRPC", RpcTarget.All,aimDir);
+    }
 
-        }
+    [PunRPC]
+    private void ShootRPC(Vector3 aimDir)
+    {
+        var bullet=Instantiate(BulletPrefab, FiringPosition.position, Quaternion.LookRotation(aimDir, Vector3.up));
+        Destroy(bullet, aimDir.magnitude / _bulletSpeed);
+        Inputs.Instance.shoot = false;///////
     }
 }
