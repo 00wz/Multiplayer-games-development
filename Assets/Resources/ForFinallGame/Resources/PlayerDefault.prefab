@@ -2502,7 +2502,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   PlayerCameraRoot: {fileID: 7385759592229014316}
   ControllerPrefab: {fileID: 7684177348127553437, guid: 6c595acc78dfcc3469916cd40a06a986, type: 3}
-  Health: 100
+  Health: 5
+  vfxBlood: {fileID: 1822113711193479253, guid: 9e27290d70476db42b232e4592e09ebf, type: 3}
 --- !u!143 &7385759593253004596
 CharacterController:
   m_ObjectHideFlags: 0

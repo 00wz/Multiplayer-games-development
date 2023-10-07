@@ -40,16 +40,20 @@ namespace Photon.Pun.Demo.PunBasics
 		[SerializeField]
 		private UIView UIView;
 
+		[Tooltip("GameMenu")]
+		[SerializeField]
+		private GameMenuView gameMenuView;
+
+		private const string MAIN_SCENE_NAME = "PhotonLobby";
 		#endregion
 
 		#region MonoBehaviour CallBacks
-		/*
+		
 		void Start()
 		{
-			UIView.SetSpectetorState();
-			camerManager.AimingIsEnabled(false);
+			gameMenuView.AddExitListener(LeaveRoom);
 		}
-		*/
+		
 		/// <summary>
 		/// MonoBehaviour method called on GameObject by Unity on every frame.
 		/// </summary>
@@ -82,56 +86,12 @@ namespace Photon.Pun.Demo.PunBasics
 
 		#region Photon Callbacks
 
-		public override void OnJoinedRoom()
-		{
-			// Note: it is possible that this monobehaviour is not created (or active) when OnJoinedRoom happens
-			// due to that the Start() method also checks if the local player character was network instantiated!
-			if (localPlayer == null)
-			{
-				Debug.LogFormat("We are Instantiating LocalPlayer from {0}", SceneManagerHelper.ActiveSceneName);
-
-				SpawnPlayer();
-			}
-		}
-		/*
-		/// <summary>
-		/// Called when a Photon Player got connected. We need to then load a bigger scene.
-		/// </summary>
-		/// <param name="other">Other.</param>
-		public override void OnPlayerEnteredRoom(Player other)
-		{
-			Debug.Log("OnPlayerEnteredRoom() " + other.NickName); // not seen if you're the player connecting
-
-			if (PhotonNetwork.IsMasterClient)
-			{
-				Debug.LogFormat("OnPlayerEnteredRoom IsMasterClient {0}", PhotonNetwork.IsMasterClient); // called before OnPlayerLeftRoom
-
-				LoadArena();
-			}
-		}
-		
-		/// <summary>
-		/// Called when a Photon Player got disconnected. We need to load a smaller scene.
-		/// </summary>
-		/// <param name="other">Other.</param>
-		public override void OnPlayerLeftRoom(Player other)
-		{
-			Debug.Log("OnPlayerLeftRoom() " + other.NickName); // seen when other disconnects
-
-			if (PhotonNetwork.IsMasterClient)
-			{
-				Debug.LogFormat("OnPlayerEnteredRoom IsMasterClient {0}", PhotonNetwork.IsMasterClient); // called before OnPlayerLeftRoom
-
-				LoadArena();
-			}
-		}
-		*/
 		/// <summary>
 		/// Called when the local player left the room. We need to load the launcher scene.
 		/// </summary>
 		public override void OnLeftRoom()
 		{
-			SceneManager.LoadScene("Photon");
+			SceneManager.LoadScene(MAIN_SCENE_NAME);
 		}
 
 		#endregion

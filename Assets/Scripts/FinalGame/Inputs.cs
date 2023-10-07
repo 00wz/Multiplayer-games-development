@@ -14,12 +14,14 @@ namespace StarterAssets
 		public bool shoot;
 		public bool sprint;
 		public bool aim;
+		public bool applicationFocus;
+		public bool esc;
+		public bool IsFreez = false;
 
 		[Header("Movement Settings")]
 		public bool analogMovement;
 
 		[Header("Mouse Cursor Settings")]
-		public bool cursorLocked = true;
 		public bool cursorInputForLook = true;
 
 		public static Inputs Instance;
@@ -40,35 +42,40 @@ namespace StarterAssets
 #if ENABLE_INPUT_SYSTEM
 		public void OnMove(InputValue value)
 		{
-			MoveInput(value.Get<Vector2>());
+			MoveInput(IsFreez?Vector2.zero: value.Get<Vector2>());
 		}
 
 		public void OnLook(InputValue value)
 		{
 			if (cursorInputForLook)
 			{
-				LookInput(value.Get<Vector2>());
+				LookInput(IsFreez ? Vector2.zero : value.Get<Vector2>());
 			}
 		}
 
 		public void OnJump(InputValue value)
 		{
-			JumpInput(value.isPressed);
+			JumpInput(IsFreez ? false : value.isPressed);
 		}
 
 		public void OnShoot(InputValue value)
 		{
-			ShootInput(value.isPressed);
+			ShootInput(IsFreez ? false : value.isPressed);
+		}
+
+		public void OnMenu(InputValue value)
+		{
+			MenuInput(value.isPressed);
 		}
 
 		public void OnSprint(InputValue value)
 		{
-			SprintInput(value.isPressed);
+			SprintInput(IsFreez ? false : value.isPressed);
 		}
 
 		public void OnAim(InputValue value)
 		{
-			AimInput(value.isPressed);
+			AimInput(IsFreez ? false : value.isPressed);
 		}
 #endif
 
@@ -100,10 +107,11 @@ namespace StarterAssets
 
 		private void OnApplicationFocus(bool hasFocus)
 		{
-			SetCursorState(cursorLocked);
+			applicationFocus = hasFocus;
+			//SetCursorState(cursorLocked);
 		}
 
-		private void SetCursorState(bool newState)
+		public void SetCursorState(bool newState)
 		{
 			Cursor.lockState = newState ? CursorLockMode.Locked : CursorLockMode.None;
 		}
@@ -111,6 +119,11 @@ namespace StarterAssets
 		private void ShootInput(bool newShootState)
         {
 			shoot = newShootState;
+        }
+
+		private void MenuInput(bool newEscState)
+        {
+			esc = newEscState;
         }
 	}
 

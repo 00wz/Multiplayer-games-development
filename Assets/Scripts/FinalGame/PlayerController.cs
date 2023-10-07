@@ -70,6 +70,8 @@ namespace StarterAssets
             {
                 _mainCamera = GameObject.FindGameObjectWithTag("MainCamera");
             }
+            Inputs.Instance.shoot = false;////
+            Inputs.Instance.jump = false;////
         }
 
         private void Start()
@@ -94,6 +96,7 @@ namespace StarterAssets
             if (Inputs.Instance.shoot)
             {
                 _shootController.Shoot();
+                Inputs.Instance.shoot = false;///////
             }
         }
 

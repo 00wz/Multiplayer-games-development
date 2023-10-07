@@ -41,12 +41,12 @@ public class LobbyController : ILobbyCallbacks,IDisposable
         for (int i = 0; i < roomList.Count; i++)
         {
             RoomInfo info = roomList[i];
-            if (info.RemovedFromList)
+            if (info.RemovedFromList&&cachedRoomList.ContainsKey(info))
             {
                 GameObject.Destroy(cachedRoomList[info].gameObject);
                 cachedRoomList.Remove(info);
             }
-            else
+            else if(!cachedRoomList.ContainsKey(info))
             {
                 var room = GameObject.Instantiate(_roomViewPrefab, _lobbyView.RoomList.transform);
                 room.JoinButton.onClick.AddListener(() => _onJoinCullback(info.Name));

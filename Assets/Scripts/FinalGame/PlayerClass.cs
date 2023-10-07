@@ -7,7 +7,7 @@ using System.Collections.Generic;
 using UnityEngine;
 
 [RequireComponent(typeof(PhotonView))]
-public class PlayerClass : MonoBehaviour,IDamageable, IInRoomCallbacks
+public class PlayerClass : MonoBehaviour,IDamageable, IInRoomCallbacks, IOnPhotonViewPreNetDestroy
 {
     [SerializeField]
     public GameObject PlayerCameraRoot;
@@ -16,7 +16,10 @@ public class PlayerClass : MonoBehaviour,IDamageable, IInRoomCallbacks
     private PlayerController ControllerPrefab;
 
     [SerializeField]
-    private int Health = 100;
+    private int Health = 5;
+
+    [SerializeField]
+    private Transform vfxBlood;
 
     public event Action<ControllerColliderHit> OnCollision;
     private PlayerController _controller;
@@ -31,6 +34,19 @@ public class PlayerClass : MonoBehaviour,IDamageable, IInRoomCallbacks
     private void OnDestroy()
     {
         PhotonNetwork.RemoveCallbackTarget(this);
+    }
+
+    public void OnPreNetDestroy(PhotonView rootView)
+    {
+        OnDeath();
+    }
+    private void OnDeath()
+    {
+        var children = transform.GetComponentsInChildren<Transform>(includeInactive: true);
+        foreach (var child in children)
+        {
+            Instantiate(vfxBlood, child.position, Quaternion.identity);
+        }
     }
     public void TakeControl()
     {
@@ -55,21 +71,40 @@ public class PlayerClass : MonoBehaviour,IDamageable, IInRoomCallbacks
     public void TakeDamage(int value,Photon.Realtime.Player attacker)
     {
         Health = Health - value;
-        _photonView.RPC(nameof(SynchronizeHealth), RpcTarget.All,Health, gameObject.activeSelf);
+        if (Health <= 0)
+        {
+            _photonView.RPC(nameof(KillOther), attacker, _photonView.Owner);
+            _photonView.RPC(nameof(DeathPlayer), _photonView.Owner);
+        }
+        else
+        {
+        _photonView.RPC(nameof(SynchronizeHealth), RpcTarget.All,Health);
+        }
     }
 
     [PunRPC]
-    private void SynchronizeHealth(int newHPValue,bool isEnable)
+    private void KillOther(Photon.Realtime.Player killed)
+    {
+        Debug.Log("you killed a player: " + killed.NickName);
+    }
+
+    [PunRPC]
+    private void DeathPlayer()
+    {
+        PhotonNetwork.Destroy(gameObject);
+    }
+
+    [PunRPC]
+    private void SynchronizeHealth(int newHPValue)
     {
         Health = newHPValue;
-        gameObject.SetActive(isEnable);
     }
 
     public void OnPlayerEnteredRoom(Player newPlayer)
     {
         if (PhotonNetwork.IsMasterClient)
         {
-            _photonView.RPC(nameof(SynchronizeHealth), newPlayer, Health, gameObject.activeSelf);
+            _photonView.RPC(nameof(SynchronizeHealth), newPlayer, Health);
         }
     }
 

@@ -1,5 +1,6 @@
 using Photon.Pun;
 using StarterAssets;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -25,7 +26,13 @@ public class ShootController : MonoBehaviour
     private const float RAYCAST_DISTANCE= 100f;
     private PhotonView _photonView;
     private float _bulletSpeed;
-
+    /*
+    enum GunState
+    {
+        Ready,
+        Waiting
+    }
+    */
     private void Awake()
     {
         _photonView = GetComponent<PhotonView>();
@@ -53,7 +60,6 @@ public class ShootController : MonoBehaviour
     {
         BulletProjectile bulletPrefab = BulletPrefab;
         RaycastHit raycastHit;
-        Inputs.Instance.shoot = false;///////
         if(Physics.Raycast(FiringPosition.position,aimDir,out raycastHit, RAYCAST_DISTANCE, LayerMaskBulletTarget))
         {
             if (raycastHit.collider.TryGetComponent<IDamageable>(out IDamageable damageable))

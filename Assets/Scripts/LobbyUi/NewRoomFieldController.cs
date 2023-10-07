@@ -21,6 +21,9 @@ public class NewRoomFieldController: IDisposable
 
     public void Dispose()
     {
-        GameObject.Destroy(_newRoomFieldView.gameObject);
+        if(_newRoomFieldView!=null)
+        {
+            GameObject.Destroy(_newRoomFieldView.gameObject);
+        }
     }
 }
