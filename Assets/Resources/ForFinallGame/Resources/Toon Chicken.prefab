@@ -670,6 +670,9 @@ MonoBehaviour:
   ReversalLayers:
     serializedVersion: 2
     m_Bits: 183
+  BodyHitAudioClips:
+  - {fileID: 8300000, guid: 920f57081a58ed04f9342979d4ec55c3, type: 3}
+  AudioVolume: 1
 --- !u!114 &5818209425318835317
 MonoBehaviour:
   m_ObjectHideFlags: 0

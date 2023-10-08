@@ -21,7 +21,7 @@ public class LobbyController2 : ILobbyCallbacks, IDisposable
         _lbc.AddCallbackTarget(this);
         _lobbyView.IsLoading = !PhotonNetwork.InLobby;
     }
-
+    /*
     private void UpdateCachedRoomList(List<RoomInfo> roomList)
     {
         ClearList();
@@ -37,7 +37,32 @@ public class LobbyController2 : ILobbyCallbacks, IDisposable
             }
         }
     }
-
+    */
+    private void UpdateCachedRoomList(List<RoomInfo> roomList)
+    {
+        for (int i = 0; i < roomList.Count; i++)
+        {
+            RoomInfo info = roomList[i];
+            if (info.RemovedFromList)
+            {
+                if(cachedRoomList.ContainsKey(info))
+                {
+                    GameObject.Destroy(cachedRoomList[info].gameObject);
+                    cachedRoomList.Remove(info);
+                }
+            }
+            else 
+            {
+                if (!cachedRoomList.ContainsKey(info))
+                {
+                    var room = GameObject.Instantiate(_roomViewPrefab, _lobbyView.RoomList.transform);
+                    room.JoinButton.onClick.AddListener(() => _onJoinCullback(info.Name));
+                    room.RoomName.text = info.Name;
+                    cachedRoomList[info] = room;
+                }
+            }
+        }
+    }
     private void ClearList()
     {
         foreach (RoomView rv in cachedRoomList.Values)

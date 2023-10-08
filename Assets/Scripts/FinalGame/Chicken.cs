@@ -14,6 +14,10 @@ public class Chicken : MonoBehaviour, IDamageable
     private float Speed=2f;
     [SerializeField]
     private LayerMask ReversalLayers;
+    [SerializeField]
+    private AudioClip[] BodyHitAudioClips;
+    [SerializeField]
+    [Range(0, 1)] public float AudioVolume = 0.5f;
 
     private Vector3 _currentDirection=Vector3.forward;
     private CharacterController _characterController;
@@ -54,6 +58,7 @@ public class Chicken : MonoBehaviour, IDamageable
 
     public void TakeDamage(int value, Player attacker)
     {
+        PlayBodyHitSound();
         if (!PhotonNetwork.IsMasterClient)
         {
             return;
@@ -67,6 +72,12 @@ public class Chicken : MonoBehaviour, IDamageable
         if ((ReversalLayers & (1 << hit.gameObject.layer)) == 0)
             return;
         _currentDirection = Vector3.Reflect(_currentDirection, hit.normal);
-        
+
+    }
+
+    private void PlayBodyHitSound()
+    {
+        var index = UnityEngine.Random.Range(0, BodyHitAudioClips.Length);
+        AudioSource.PlayClipAtPoint(BodyHitAudioClips[index], transform.position, AudioVolume);
     }
 }

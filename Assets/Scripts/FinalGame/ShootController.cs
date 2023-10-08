@@ -23,6 +23,11 @@ public class ShootController : MonoBehaviour
     [SerializeField]
     public BulletProjectile BulletBloodPrefab;
 
+    [SerializeField]
+    private AudioClip[] ShootAudioClips;
+    [SerializeField]
+    [Range(0, 1)] public float AudioVolume = 1f;
+
     private const float RAYCAST_DISTANCE= 100f;
     private PhotonView _photonView;
     private float _bulletSpeed;
@@ -58,6 +63,7 @@ public class ShootController : MonoBehaviour
     [PunRPC]
     private void ShootRPC(Vector3 aimDir, PhotonMessageInfo info)
     {
+        PlayHitSound();
         BulletProjectile bulletPrefab = BulletPrefab;
         RaycastHit raycastHit;
         if(Physics.Raycast(FiringPosition.position,aimDir,out raycastHit, RAYCAST_DISTANCE, LayerMaskBulletTarget))
@@ -66,7 +72,7 @@ public class ShootController : MonoBehaviour
             {
                 bulletPrefab = BulletBloodPrefab;
 
-                if (PhotonNetwork.IsMasterClient)
+                //if (PhotonNetwork.IsMasterClient)
                     damageable.TakeDamage(1, info.Sender);
             }
         }
@@ -74,5 +80,11 @@ public class ShootController : MonoBehaviour
         var bullet=Instantiate<BulletProjectile>(bulletPrefab, FiringPosition.position, 
             Quaternion.LookRotation(aimDir, Vector3.up));
         bullet.Init(raycastHit.point);
+    }
+
+    private void PlayHitSound()
+    {
+        var index = UnityEngine.Random.Range(0, ShootAudioClips.Length);
+        AudioSource.PlayClipAtPoint(ShootAudioClips[index], transform.position, AudioVolume);
     }
 }

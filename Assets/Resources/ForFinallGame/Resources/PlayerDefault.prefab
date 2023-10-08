@@ -2504,6 +2504,16 @@ MonoBehaviour:
   ControllerPrefab: {fileID: 7684177348127553437, guid: 6c595acc78dfcc3469916cd40a06a986, type: 3}
   Health: 5
   vfxBlood: {fileID: 1822113711193479253, guid: 9e27290d70476db42b232e4592e09ebf, type: 3}
+  BodyHitAudioClips:
+  - {fileID: 8300000, guid: b187188b1a23e5947a5d36da678665b9, type: 3}
+  - {fileID: 8300000, guid: 7ffe7916be9a87041bc800561a88d7f0, type: 3}
+  - {fileID: 8300000, guid: a213454a85e1ce34c856a4d5d5202b0f, type: 3}
+  DeathAudioClips:
+  - {fileID: 8300000, guid: ae5cafdeecb71c3489791358727f34c9, type: 3}
+  - {fileID: 8300000, guid: 7c455925f8f926443badb3efd50e6d19, type: 3}
+  - {fileID: 8300000, guid: 280592efccc500540ba2afca3caceeb3, type: 3}
+  - {fileID: 8300000, guid: 8ae22188bd2af0a40b35cd9ba297acca, type: 3}
+  AudioVolume: 1
 --- !u!143 &7385759593253004596
 CharacterController:
   m_ObjectHideFlags: 0
@@ -2604,7 +2614,7 @@ MonoBehaviour:
   - {fileID: 8300000, guid: 67c8b33e424ccdc4486edf538ab91c5a, type: 3}
   - {fileID: 8300000, guid: 274649b0e221539409070ebf6c18918b, type: 3}
   - {fileID: 8300000, guid: a3194b8bbc96ef84fab1f98f4b7dae3e, type: 3}
-  FootstepAudioVolume: 0.3
+  FootstepAudioVolume: 1
   Grounded: 1
 --- !u!114 &3334591524872165114
 MonoBehaviour:
@@ -2627,6 +2637,10 @@ MonoBehaviour:
   FiringPosition: {fileID: 5977202626182855737}
   BulletPrefab: {fileID: 810733913983134852, guid: 9fc5deab5fef94d41b92a7112049f302, type: 3}
   BulletBloodPrefab: {fileID: 810733913983134852, guid: 40b3258848a085443bc471d04b258a81, type: 3}
+  ShootAudioClips:
+  - {fileID: 8300000, guid: 0d4f022a56edcd04d9c2ddbd890bea68, type: 3}
+  - {fileID: 8300000, guid: 71b4a59a62b9f1344b60f7195f6154bc, type: 3}
+  AudioVolume: 0.4
 --- !u!1 &7385759593275015336
 GameObject:
   m_ObjectHideFlags: 0

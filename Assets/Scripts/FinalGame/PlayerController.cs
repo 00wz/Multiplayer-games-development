@@ -36,6 +36,9 @@ namespace StarterAssets
         [Tooltip("Time required to pass before being able to jump again. Set to 0f to instantly jump again")]
         public float JumpTimeout = 0.50f;
 
+        [SerializeField]
+        private bool DirectionalControl = false;
+
 
         // player
         private float _speed;
@@ -59,9 +62,6 @@ namespace StarterAssets
                 return _groundedObserver.Grounded;
             }
         }
-
-        [SerializeField]
-        private bool DirectionalControl = false;
 
         private void Awake()
         {
@@ -93,11 +93,12 @@ namespace StarterAssets
 
             Move();
 
-            if (Inputs.Instance.shoot)
+            if (Inputs.Instance.aim&&Inputs.Instance.shoot)
             {
                 _shootController.Shoot();
                 Inputs.Instance.shoot = false;///////
             }
+            DirectionalControl = Inputs.Instance.aim;
         }
 
         private void Move()

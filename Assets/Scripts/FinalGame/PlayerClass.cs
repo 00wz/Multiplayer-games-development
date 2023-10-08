@@ -21,6 +21,13 @@ public class PlayerClass : MonoBehaviour,IDamageable, IInRoomCallbacks, IOnPhoto
     [SerializeField]
     private Transform vfxBlood;
 
+    [SerializeField]
+    private AudioClip[] BodyHitAudioClips;
+    [SerializeField]
+    private AudioClip[] DeathAudioClips;
+    [SerializeField]
+    [Range(0, 1)] public float AudioVolume = 0.5f;
+
     public event Action<ControllerColliderHit> OnCollision;
     private PlayerController _controller;
     private PhotonView _photonView;
@@ -70,17 +77,23 @@ public class PlayerClass : MonoBehaviour,IDamageable, IInRoomCallbacks, IOnPhoto
 
     public void TakeDamage(int value,Photon.Realtime.Player attacker)
     {
+        PlayBodyHitSound();
+        if (!PhotonNetwork.IsMasterClient)
+        {
+            return;
+        }
         Health = Health - value;
         if (Health <= 0)
         {
             _photonView.RPC(nameof(KillOther), attacker, _photonView.Owner);
-            _photonView.RPC(nameof(DeathPlayer), _photonView.Owner);
+            _photonView.RPC(nameof(DeathPlayer), RpcTarget.All);
         }
         else
         {
         _photonView.RPC(nameof(SynchronizeHealth), RpcTarget.All,Health);
         }
     }
+
 
     [PunRPC]
     private void KillOther(Photon.Realtime.Player killed)
@@ -91,7 +104,11 @@ public class PlayerClass : MonoBehaviour,IDamageable, IInRoomCallbacks, IOnPhoto
     [PunRPC]
     private void DeathPlayer()
     {
-        PhotonNetwork.Destroy(gameObject);
+        PlayDeathSound();
+        if (_photonView.AmOwner)
+        {
+            PhotonNetwork.Destroy(gameObject);
+        }
     }
 
     [PunRPC]
@@ -106,6 +123,18 @@ public class PlayerClass : MonoBehaviour,IDamageable, IInRoomCallbacks, IOnPhoto
         {
             _photonView.RPC(nameof(SynchronizeHealth), newPlayer, Health);
         }
+    }
+
+    private void PlayBodyHitSound()
+    {
+                var index = UnityEngine.Random.Range(0, BodyHitAudioClips.Length);
+                AudioSource.PlayClipAtPoint(BodyHitAudioClips[index], transform.position, AudioVolume);
+    }
+
+    private void PlayDeathSound()
+    {
+                var index = UnityEngine.Random.Range(0, DeathAudioClips.Length);
+                AudioSource.PlayClipAtPoint(DeathAudioClips[index], transform.position, AudioVolume);
     }
 
     public void OnPlayerLeftRoom(Player otherPlayer)

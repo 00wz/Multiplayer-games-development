@@ -115,7 +115,10 @@ public class PhotonLauncher2 : MonoBehaviourPunCallbacks,IDisposable
 
     public override void OnDisconnected(DisconnectCause cause)
     {
-        LoadWindow.SetActive(true);
+        if (LoadWindow != null)
+        {
+            LoadWindow.SetActive(true);
+        }
         Connect();
     }
 

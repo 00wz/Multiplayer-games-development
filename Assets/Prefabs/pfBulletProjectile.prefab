@@ -64,6 +64,11 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   vfxHit: {fileID: 613433886817584985, guid: 9f5fbcfb6299c2b4c912f3ff44f14463, type: 3}
   Speed: 100
+  IsEnableHitSound: 1
+  HitAudioClips:
+  - {fileID: 8300000, guid: b7b5a7937e27a484ba894d95b5065290, type: 3}
+  - {fileID: 8300000, guid: 56ae2a137e27dac4a85921f770467896, type: 3}
+  AudioVolume: 1
 --- !u!1 &6863857337905034704
 GameObject:
   m_ObjectHideFlags: 0
