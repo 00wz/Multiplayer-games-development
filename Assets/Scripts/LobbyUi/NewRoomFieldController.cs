@@ -13,7 +13,7 @@ public class NewRoomFieldController: IDisposable
             _newRoomFieldView.gameObject.SetActive(value);
         }
     }
-    public NewRoomFieldController(Action<string> onCreate,Canvas canvas)
+    public NewRoomFieldController(Action<string> onCreate,GameObject canvas)
     {
         _newRoomFieldView = GameObject.Instantiate<NewRoomFieldView>(Resources.Load<NewRoomFieldView>("NewRoomFileld"),canvas.transform);
         _newRoomFieldView.CreateRoomButton.onClick.AddListener(() => onCreate(_newRoomFieldView.RoomName.text));

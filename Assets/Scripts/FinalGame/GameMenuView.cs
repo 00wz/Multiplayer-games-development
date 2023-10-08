@@ -13,6 +13,15 @@ public class GameMenuView : MonoBehaviour
     [SerializeField]
     private Button ExitButton;
     // Update is called once per frame
+    private void Start()
+    {
+        Inputs.Instance.LookCursor(!MenuWindow.activeSelf);
+    }
+
+    private void OnDestroy()
+    {
+        Inputs.Instance.LookCursor(false);
+    }
     void Update()
     {
         if (Inputs.Instance.esc)
@@ -22,7 +31,7 @@ public class GameMenuView : MonoBehaviour
 
             //if (Inputs.Instance.applicationFocus)
             {
-                Inputs.Instance.SetCursorState(!MenuWindow.activeSelf);
+                Inputs.Instance.LookCursor(!MenuWindow.activeSelf);
             }
 
             Inputs.Instance.IsFreez = MenuWindow.activeSelf;

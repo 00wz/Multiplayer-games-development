@@ -31,7 +31,7 @@ public class PhotonController : MonoBehaviour, IConnectionCallbacks, IMatchmakin
         _lbc.ConnectUsingSettings(_serverSettings.AppSettings);
 
         _lobbyController = new LobbyController(_lbc, JoinRoom,_canvas);
-        _newRoomFieldController = new NewRoomFieldController(CreateRoom,_canvas);
+        ///_newRoomFieldController = new NewRoomFieldController(CreateRoom,_canvas);
     }
 
     private void OnDestroy()

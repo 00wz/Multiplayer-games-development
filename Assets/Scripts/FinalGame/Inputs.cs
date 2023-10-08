@@ -14,7 +14,7 @@ namespace StarterAssets
 		public bool shoot;
 		public bool sprint;
 		public bool aim;
-		public bool applicationFocus;
+		//public bool applicationFocus;
 		public bool esc;
 		public bool IsFreez = false;
 
@@ -104,14 +104,14 @@ namespace StarterAssets
 		{
 			aim = newAimState;
 		}
-
+		/*
 		private void OnApplicationFocus(bool hasFocus)
 		{
 			applicationFocus = hasFocus;
 			//SetCursorState(cursorLocked);
 		}
-
-		public void SetCursorState(bool newState)
+		*/
+		public void LookCursor(bool newState)
 		{
 			Cursor.lockState = newState ? CursorLockMode.Locked : CursorLockMode.None;
 		}

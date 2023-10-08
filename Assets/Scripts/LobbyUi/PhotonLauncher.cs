@@ -41,7 +41,7 @@ public class PhotonLauncher : MonoBehaviourPunCallbacks
 
         //_lobbyController = new LobbyController(_lbc, JoinRoom,_canvas);
         _lobbyController = new LobbyController(PhotonNetwork.NetworkingClient, JoinRoom,_canvas);
-        _newRoomFieldController = new NewRoomFieldController(CreateRoom,_canvas);
+        ///_newRoomFieldController = new NewRoomFieldController(CreateRoom,_canvas);
     }
 
     public void Connect()

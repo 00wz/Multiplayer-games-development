@@ -12,7 +12,7 @@ public class LobbyController2 : ILobbyCallbacks, IDisposable
     private RoomView _roomViewPrefab;
     private Action<string> _onJoinCullback;
     
-    public LobbyController2(LoadBalancingClient lbc, Action<string> onJoin, Canvas canvas)
+    public LobbyController2(LoadBalancingClient lbc, Action<string> onJoin, GameObject canvas)
     {
         _lbc = lbc;
         _lobbyView = GameObject.Instantiate<LobbyView2>(Resources.Load<LobbyView2>("LobbyView2"), canvas.transform);

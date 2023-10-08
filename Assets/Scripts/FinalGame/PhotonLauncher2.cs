@@ -14,7 +14,7 @@ public class PhotonLauncher2 : MonoBehaviourPunCallbacks,IDisposable
     private TMP_Text _stateUiText;
 
     [SerializeField]
-    private Canvas _canvas;
+    private GameObject MenuRoot;
 
     [SerializeField]
     private string SceneNameLoad = "FirstScene";
@@ -40,8 +40,8 @@ public class PhotonLauncher2 : MonoBehaviourPunCallbacks,IDisposable
         
         Connect();
 
-        _lobbyController = new LobbyController2(PhotonNetwork.NetworkingClient, JoinRoom, _canvas);
-        _newRoomFieldController = new NewRoomFieldController(CreateRoom, _canvas);
+        _lobbyController = new LobbyController2(PhotonNetwork.NetworkingClient, JoinRoom, MenuRoot);
+        _newRoomFieldController = new NewRoomFieldController(CreateRoom, MenuRoot);
         _newRoomFieldController.enable = true;
     }
 
@@ -89,11 +89,13 @@ public class PhotonLauncher2 : MonoBehaviourPunCallbacks,IDisposable
 
     private void JoinRoom(string roomName)
     {
+        LoadWindow.SetActive(true);
         PhotonNetwork.NetworkingClient.OpJoinRoom(new EnterRoomParams() { RoomName = roomName });
     }
 
     private void CreateRoom(string roomName)
     {
+        LoadWindow.SetActive(true);
         var enterRoomParams = new EnterRoomParams()
         {
             RoomName = roomName,
@@ -108,6 +110,7 @@ public class PhotonLauncher2 : MonoBehaviourPunCallbacks,IDisposable
 
     public override void OnCreateRoomFailed(short returnCode, string message)
     {
+        LoadWindow.SetActive(false);
     }
 
     public override void OnDisconnected(DisconnectCause cause)
