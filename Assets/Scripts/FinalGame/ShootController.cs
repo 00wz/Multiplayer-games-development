@@ -63,6 +63,10 @@ public class ShootController : MonoBehaviour
     [PunRPC]
     private void ShootRPC(Vector3 aimDir, PhotonMessageInfo info)
     {
+        if (!gameObject.activeInHierarchy)
+        {
+            return;
+        }
         PlayHitSound();
         BulletProjectile bulletPrefab = BulletPrefab;
         RaycastHit raycastHit;

@@ -51,11 +51,6 @@ public class PlayerClass : MonoBehaviour,IDamageable, IInRoomCallbacks
         PhotonNetwork.RemoveCallbackTarget(this);
     }
 
-    private void OnDisable()
-    {
-        //Debug.LogWarning("TearApart!!!!!!!!!!!");
-        TearApart();
-    }
     private void TearApart()
     {
         var children = transform.GetComponentsInChildren<Transform>(includeInactive: true);
@@ -86,6 +81,10 @@ public class PlayerClass : MonoBehaviour,IDamageable, IInRoomCallbacks
 
     public void TakeDamage(int value,Photon.Realtime.Player attacker,int attackerViewId)
     {
+        if (!gameObject.activeInHierarchy)
+        {
+            return;
+        }
         PlayBodyHitSound();
         if (!PhotonNetwork.IsMasterClient)
         {
@@ -122,9 +121,10 @@ public class PlayerClass : MonoBehaviour,IDamageable, IInRoomCallbacks
     {
         PlayDeathSound();
         OnDie?.Invoke();
+        TearApart();
+        gameObject.SetActive(false);
         if (_photonView.AmOwner)
         {
-
             PhotonNetwork.Destroy(gameObject);
         }
     }

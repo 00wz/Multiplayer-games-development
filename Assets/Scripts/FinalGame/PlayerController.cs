@@ -89,6 +89,10 @@ namespace StarterAssets
 
         private void Update()
         {
+            if (!gameObject.activeInHierarchy)
+            {
+                return;
+            }
             JumpAndGravity();
 
             Move();
