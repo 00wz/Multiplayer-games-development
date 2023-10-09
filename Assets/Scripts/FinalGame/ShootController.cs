@@ -71,9 +71,9 @@ public class ShootController : MonoBehaviour
             if (raycastHit.collider.TryGetComponent<IDamageable>(out IDamageable damageable))
             {
                 bulletPrefab = BulletBloodPrefab;
-
+                
                 //if (PhotonNetwork.IsMasterClient)
-                    damageable.TakeDamage(1, info.Sender);
+                    damageable.TakeDamage(1, info.Sender,_photonView.ViewID);
             }
         }
 

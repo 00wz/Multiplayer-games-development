@@ -21,10 +21,10 @@ public class Chicken : MonoBehaviour, IDamageable
 
     private Vector3 _currentDirection=Vector3.forward;
     private CharacterController _characterController;
-    //private PhotonView _photonView;
+    private PhotonView _photonView;
     void Start()
     {
-        //_photonView = GetComponent<PhotonView>();
+        _photonView = GetComponent<PhotonView>();
         _characterController = GetComponent<CharacterController>();
         if (!PhotonNetwork.IsMasterClient)
         {
@@ -56,9 +56,15 @@ public class Chicken : MonoBehaviour, IDamageable
         return horizontal;
     }
 
-    public void TakeDamage(int value, Player attacker)
+    public void TakeDamage(int value, Player attacker, int attakerViewId)
     {
         PlayBodyHitSound();
+        _photonView.RPC(nameof(TakeDamageRPC), RpcTarget.MasterClient);
+    }
+
+    [PunRPC]
+    private void TakeDamageRPC()
+    {
         if (!PhotonNetwork.IsMasterClient)
         {
             return;

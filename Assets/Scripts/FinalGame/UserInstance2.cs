@@ -61,7 +61,6 @@ namespace Photon.Pun.Demo.PunBasics
 		{
 			if(PhotonNetwork.InRoom && localPlayer == null)
             {
-				UIView.SetSpectetorState();
 				camerManager.AimingIsEnabled(false);
                 if (Inputs.Instance.jump)
                 {
@@ -70,7 +69,6 @@ namespace Photon.Pun.Demo.PunBasics
 			}
 			else
             {
-				UIView.SetGameState();
 				camerManager.AimingIsEnabled(true);
 			}
 			/*
@@ -118,6 +116,7 @@ namespace Photon.Pun.Demo.PunBasics
 			PlayerClass player = localPlayer.GetComponent<PlayerClass>();
 			player.TakeControl();
 			camerManager.SetTarget(player.PlayerCameraRoot.transform);
+			UIView.SetPlayer(player);
 		}
 		void LoadArena()
 		{

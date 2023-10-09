@@ -4,5 +4,5 @@ using UnityEngine;
 
 public interface IDamageable
 {
-    public void TakeDamage(int value, Photon.Realtime.Player attacker);
+    public void TakeDamage(int value, Photon.Realtime.Player attacker,int attackerViewId);
 }

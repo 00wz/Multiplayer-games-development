@@ -7,7 +7,7 @@ using System.Collections.Generic;
 using UnityEngine;
 
 [RequireComponent(typeof(PhotonView))]
-public class PlayerClass : MonoBehaviour,IDamageable, IInRoomCallbacks, IOnPhotonViewPreNetDestroy
+public class PlayerClass : MonoBehaviour,IDamageable, IInRoomCallbacks
 {
     [SerializeField]
     public GameObject PlayerCameraRoot;
@@ -32,6 +32,14 @@ public class PlayerClass : MonoBehaviour,IDamageable, IInRoomCallbacks, IOnPhoto
     private PlayerController _controller;
     private PhotonView _photonView;
 
+    public event Action OnDie;
+    public event Action<int> OnHPChange;
+    public Action OnKillOther;
+
+    public int GetHealth()
+    {
+        return Health;
+    }
     private void Awake()
     {
         _photonView = GetComponent<PhotonView>();
@@ -43,11 +51,12 @@ public class PlayerClass : MonoBehaviour,IDamageable, IInRoomCallbacks, IOnPhoto
         PhotonNetwork.RemoveCallbackTarget(this);
     }
 
-    public void OnPreNetDestroy(PhotonView rootView)
+    private void OnDisable()
     {
-        OnDeath();
+        //Debug.LogWarning("TearApart!!!!!!!!!!!");
+        TearApart();
     }
-    private void OnDeath()
+    private void TearApart()
     {
         var children = transform.GetComponentsInChildren<Transform>(includeInactive: true);
         foreach (var child in children)
@@ -75,7 +84,7 @@ public class PlayerClass : MonoBehaviour,IDamageable, IInRoomCallbacks, IOnPhoto
         }
     }
 
-    public void TakeDamage(int value,Photon.Realtime.Player attacker)
+    public void TakeDamage(int value,Photon.Realtime.Player attacker,int attackerViewId)
     {
         PlayBodyHitSound();
         if (!PhotonNetwork.IsMasterClient)
@@ -85,7 +94,7 @@ public class PlayerClass : MonoBehaviour,IDamageable, IInRoomCallbacks, IOnPhoto
         Health = Health - value;
         if (Health <= 0)
         {
-            _photonView.RPC(nameof(KillOther), attacker, _photonView.Owner);
+            _photonView.RPC(nameof(KillerClientOnly), attacker, _photonView.Owner,attackerViewId);
             _photonView.RPC(nameof(DeathPlayer), RpcTarget.All);
         }
         else
@@ -96,8 +105,15 @@ public class PlayerClass : MonoBehaviour,IDamageable, IInRoomCallbacks, IOnPhoto
 
 
     [PunRPC]
-    private void KillOther(Photon.Realtime.Player killed)
+    private void KillerClientOnly(Photon.Realtime.Player killed,int attackerViewId)
     {
+        //Debug.LogWarning((OnKillOther==null)+"\n" +
+        //    (OnHPChange==null));
+
+        if(PhotonView.Find(attackerViewId).TryGetComponent<PlayerClass>(out PlayerClass playerClass))
+        {
+            playerClass.OnKillOther?.Invoke();
+        }
         Debug.Log("you killed a player: " + killed.NickName);
     }
 
@@ -105,8 +121,10 @@ public class PlayerClass : MonoBehaviour,IDamageable, IInRoomCallbacks, IOnPhoto
     private void DeathPlayer()
     {
         PlayDeathSound();
+        OnDie?.Invoke();
         if (_photonView.AmOwner)
         {
+
             PhotonNetwork.Destroy(gameObject);
         }
     }
@@ -115,6 +133,7 @@ public class PlayerClass : MonoBehaviour,IDamageable, IInRoomCallbacks, IOnPhoto
     private void SynchronizeHealth(int newHPValue)
     {
         Health = newHPValue;
+        OnHPChange?.Invoke(Health);
     }
 
     public void OnPlayerEnteredRoom(Player newPlayer)
