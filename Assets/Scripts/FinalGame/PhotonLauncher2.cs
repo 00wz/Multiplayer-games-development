@@ -52,7 +52,10 @@ public class PhotonLauncher2 : MonoBehaviourPunCallbacks,IDisposable
             //LoadWindow.SetActive(false);
             return;
         }
-        LoadWindow.SetActive(true);
+        if (LoadWindow != null)
+        {
+            LoadWindow.SetActive(true);
+        }
 
         PhotonNetwork.ConnectUsingSettings(_serverSettings.AppSettings);
         PhotonNetwork.GameVersion = Application.version;
@@ -115,10 +118,6 @@ public class PhotonLauncher2 : MonoBehaviourPunCallbacks,IDisposable
 
     public override void OnDisconnected(DisconnectCause cause)
     {
-        if (LoadWindow != null)
-        {
-            LoadWindow.SetActive(true);
-        }
         Connect();
     }
 

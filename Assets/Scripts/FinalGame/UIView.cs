@@ -14,7 +14,7 @@ public class UIView : MonoBehaviour
     [SerializeField]
     private TMP_Text FragsText;
 
-    private int _frags = 0;
+    public int _frags { get; private set; } = 0;
     private PlayerClass _player;
 
     private void Start()

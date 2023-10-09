@@ -138,6 +138,7 @@ GameObject:
   m_Component:
   - component: {fileID: 19281074}
   - component: {fileID: 19281076}
+  - component: {fileID: 19281077}
   m_Layer: 0
   m_Name: Launcher
   m_TagString: Untagged
@@ -177,6 +178,18 @@ MonoBehaviour:
   MenuRoot: {fileID: 1469976885}
   SceneNameLoad: FirstGameScene
   LoadWindow: {fileID: 145978020}
+--- !u!114 &19281077
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 19281072}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1abc915497f16d54eb895b7ae2a07f73, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &145978020
 GameObject:
   m_ObjectHideFlags: 0

@@ -4,6 +4,7 @@ using UnityEngine.SceneManagement;
 using Photon.Realtime;
 using Cinemachine;
 using StarterAssets;
+using PlayFab;
 
 namespace Photon.Pun.Demo.PunBasics
 {
@@ -101,7 +102,23 @@ namespace Photon.Pun.Demo.PunBasics
 			PhotonNetwork.LeaveRoom();
 		}
 
-		public void QuitApplication()
+        private void OnDestroy()
+        {
+			Debug.LogWarning("PlayFabClientAPI.IsClientLoggedIn()=" + PlayFabClientAPI.IsClientLoggedIn());
+            if (PlayFabClientAPI.IsClientLoggedIn())
+            {
+				PlayFabClientAPI.AddUserVirtualCurrency(new PlayFab.ClientModels.AddUserVirtualCurrencyRequest
+				{
+					Amount = UIView._frags,
+					VirtualCurrency = "FR"
+				},
+				(result) => Debug.LogWarning(result.VirtualCurrency + "=" + result.Balance + 
+					"	change=" + result.BalanceChange),
+				(result) => Debug.LogError(result.ErrorMessage));
+			}
+		}
+
+        public void QuitApplication()
 		{
 			Application.Quit();
 		}
