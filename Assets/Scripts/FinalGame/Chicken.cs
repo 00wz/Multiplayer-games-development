@@ -22,6 +22,8 @@ public class Chicken : MonoBehaviour, IDamageable
     private Vector3 _currentDirection=Vector3.forward;
     private CharacterController _characterController;
     private PhotonView _photonView;
+    private const float PLANE_OFFSET=0.05f;
+
     void Start()
     {
         _photonView = GetComponent<PhotonView>();
@@ -44,6 +46,7 @@ public class Chicken : MonoBehaviour, IDamageable
         var sign = Random.Range(0, 2) * 2 - 1;
         Quaternion delataRot = Quaternion.AngleAxis(sign*RotateSpeed * Time.deltaTime, Vector3.up);
         _currentDirection = delataRot*_currentDirection;
+        //_currentDirection = new Vector3(_currentDirection.x, 0f, _currentDirection.z);
         transform.rotation = Quaternion.LookRotation(_currentDirection, Vector3.up);
         _characterController.Move((_currentDirection * Speed  +
                              new Vector3(0.0f, -2f, 0.0f)) * Time.deltaTime);
@@ -75,9 +78,16 @@ public class Chicken : MonoBehaviour, IDamageable
 
     private void OnControllerColliderHit(ControllerColliderHit hit)
     {
+        if (!PhotonNetwork.IsMasterClient)
+        {
+            return;
+        }
+        if (hit.point.y < transform.position.y + PLANE_OFFSET)
+            return;
         if ((ReversalLayers & (1 << hit.gameObject.layer)) == 0)
             return;
-        _currentDirection = Vector3.Reflect(_currentDirection, hit.normal);
+        var reflect=Vector3.Reflect(_currentDirection, hit.normal);
+        _currentDirection = new Vector3(reflect.x, 0f, reflect.z).normalized;
 
     }
 

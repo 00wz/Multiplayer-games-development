@@ -45,6 +45,10 @@ namespace Photon.Pun.Demo.PunBasics
 		[SerializeField]
 		private GameMenuView gameMenuView;
 
+		[Tooltip("Spawn Points")]
+		[SerializeField]
+		private Transform[] SpawnPoints;
+
 		private const string MAIN_SCENE_NAME = "PhotonLobby";
 		#endregion
 
@@ -123,8 +127,10 @@ namespace Photon.Pun.Demo.PunBasics
 		#region Private Methods
 		private void SpawnPlayer()
         {
+			var index = UnityEngine.Random.Range(0, SpawnPoints.Length);
 			// we're in a room. spawn a character for the local player. it gets synced by using PhotonNetwork.Instantiate
-			localPlayer = PhotonNetwork.Instantiate(this.playerPrefab.name, new Vector3(0f, 5f, 0f), Quaternion.identity, 0);
+			localPlayer = PhotonNetwork.Instantiate(this.playerPrefab.name, SpawnPoints[index].position,
+				SpawnPoints[index].rotation, 0);
 			PlayerClass player = localPlayer.GetComponent<PlayerClass>();
 			player.TakeControl();
 			camerManager.SetTarget(player.PlayerCameraRoot.transform);

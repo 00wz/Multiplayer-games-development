@@ -11,36 +11,5 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/Scenes/FinalGame/FirstGameScene.unity
     guid: 8cb084f83e32a124e83358c2ad47b07b
-  - enabled: 1
-    path: Assets/Scenes/Photon.unity
-    guid: 534e1e04d06def142a3cfe97189ea3ed
-  - enabled: 1
-    path: Assets/Scenes/FirstScene.unity
-    guid: 4c4d00b400e5d1344921aa52af1e0235
-  - enabled: 1
-    path: Assets/Scenes/Playfab.unity
-    guid: 9fc0d4010bbf28b4594072e72b8655ab
-  - enabled: 1
-    path: Assets/Scenes/Game.unity
-    guid: 24cd22de365e609459f924a66e92de32
-  - enabled: 1
-    path: Assets/Photon/PhotonUnityNetworking/Demos/PunBasics-Tutorial/Scenes/PunBasics-Launcher.unity
-    guid: bff77b01b50254edbb6edeeaba5ae8b3
-  - enabled: 1
-    path: Assets/Photon/PhotonUnityNetworking/Demos/PunBasics-Tutorial/Scenes/PunBasics-Room
-      for 1.unity
-    guid: 9b8561c6e396849a5ba48c3eb9524049
-  - enabled: 1
-    path: Assets/Photon/PhotonUnityNetworking/Demos/PunBasics-Tutorial/Scenes/PunBasics-Room
-      for 2.unity
-    guid: 764428c63577f4580af4ce54ca9f4b1b
-  - enabled: 1
-    path: Assets/Photon/PhotonUnityNetworking/Demos/PunBasics-Tutorial/Scenes/PunBasics-Room
-      for 3.unity
-    guid: e07afcca5bf1a41f5bd28f498656b7b8
-  - enabled: 1
-    path: Assets/Photon/PhotonUnityNetworking/Demos/PunBasics-Tutorial/Scenes/PunBasics-Room
-      for 4.unity
-    guid: e7a7f9734636d415ca84ef3aaf7680f6
   m_configObjects:
     com.unity.input.settings: {fileID: 11400000, guid: 9e7be553448fa2546aea5752021cbcf7, type: 2}
