@@ -118,11 +118,6 @@ namespace Photon.Pun.Demo.PunBasics
 			}
 		}
 
-        public void QuitApplication()
-		{
-			Application.Quit();
-		}
-
 		#endregion
 
 		#region Private Methods

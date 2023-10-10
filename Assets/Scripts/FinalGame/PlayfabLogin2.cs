@@ -7,9 +7,14 @@ using System.Linq;
 
 public class PlayfabLogin2 : MonoBehaviour
 {
+    [SerializeField]
+    private StatisticView StatisticView;
+
     private const string AuthGuidKey = "auth_guid_key";
     public void Start()
     {
+        StatisticView.SetLoadState();
+
         if (string.IsNullOrEmpty(PlayFabSettings.staticSettings.TitleId))
             {
                 PlayFabSettings.staticSettings.TitleId = "164CE";
@@ -51,10 +56,13 @@ public class PlayfabLogin2 : MonoBehaviour
 
     private void DisplayCurrencies(Dictionary<string,int> currencys)
     {
+        StatisticView.SetDisplayState(currencys["FR"]);
+        /*
         foreach(var c in currencys)
         {
             Debug.LogWarning(c.Key + "=" + c.Value);
         }
+        */
     }
     
     private void GetUserInventory()

@@ -15,7 +15,7 @@ public class LobbyController2 : ILobbyCallbacks, IDisposable
     public LobbyController2(LoadBalancingClient lbc, Action<string> onJoin, GameObject canvas)
     {
         _lbc = lbc;
-        _lobbyView = GameObject.Instantiate<LobbyView2>(Resources.Load<LobbyView2>("LobbyView2"), canvas.transform);
+        _lobbyView = GameObject.Instantiate<LobbyView2>(Resources.Load<LobbyView2>("LobbyView3"), canvas.transform);
         _roomViewPrefab = Resources.Load<RoomView>("Room");
         _onJoinCullback = onJoin;
         _lbc.AddCallbackTarget(this);
