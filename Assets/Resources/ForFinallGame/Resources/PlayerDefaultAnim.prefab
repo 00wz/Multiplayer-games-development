@@ -784,6 +784,7 @@ MonoBehaviour:
   - {fileID: 8300000, guid: 0d4f022a56edcd04d9c2ddbd890bea68, type: 3}
   - {fileID: 8300000, guid: 71b4a59a62b9f1344b60f7195f6154bc, type: 3}
   AudioVolume: 0.4
+  AnimationChangeTime: 0.2
 --- !u!114 &2750798433160171103
 MonoBehaviour:
   m_ObjectHideFlags: 0

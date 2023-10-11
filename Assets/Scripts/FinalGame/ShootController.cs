@@ -28,20 +28,30 @@ public class ShootController : MonoBehaviour
     [SerializeField]
     [Range(0, 1)] public float AudioVolume = 1f;
 
+    [SerializeField]
+    private float AnimationChangeTime = 0.2f;
+
     private const float RAYCAST_DISTANCE= 100f;
     private PhotonView _photonView;
     private float _bulletSpeed;
-    /*
+    private Animator _animator;
+    private GunState _gunState;
+    private float _animAimWaight;
+    private float _animationChangeSpeed;
+
     enum GunState
     {
-        Ready,
-        Waiting
+        Default,
+        Aiming
     }
-    */
+
     private void Awake()
     {
         _photonView = GetComponent<PhotonView>();
-        _bulletSpeed=BulletPrefab.GetComponent<BulletProjectile>().Speed;
+        _bulletSpeed=BulletPrefab.GetComponent<BulletProjectile>().Speed;////
+        _animator = GetComponent<Animator>();
+        _animationChangeSpeed = 1 / AnimationChangeTime;
+        SetState(GunState.Default);
     }
     public Vector3 CalculateTarget()
     {
@@ -54,19 +64,59 @@ public class ShootController : MonoBehaviour
         return ray.origin + ray.direction * RAYCAST_DISTANCE;
     }
 
-    public void Shoot()
+    private void Update()
     {
-        Vector3 aimDir = (CalculateTarget() - FiringPosition.position);
-        _photonView.RPC("ShootRPC", RpcTarget.All,aimDir);
+        if(_photonView.AmOwner)
+        {
+            if (Inputs.Instance.aim)
+            {
+                if (_gunState == GunState.Default)
+                    SetState(GunState.Aiming);
+            }
+            else
+            {
+                if (_gunState == GunState.Aiming)
+                    SetState(GunState.Default);
+            }
+        }
+        _animator.SetLayerWeight(1,Mathf.MoveTowards(_animator.GetLayerWeight(1),_animAimWaight,_animationChangeSpeed*Time.deltaTime) );
+    }
+
+    private void SetState(GunState state)
+    {
+        _photonView.RPC(nameof(SetStateRPC), RpcTarget.All, state);
     }
 
     [PunRPC]
-    private void ShootRPC(Vector3 aimDir, PhotonMessageInfo info)
+    private void SetStateRPC(GunState state)
+    {
+        _gunState = state;
+        if (state == GunState.Default)
+        {
+            _animAimWaight = 0;
+        }
+        else
+        {
+            _animAimWaight = 1;
+        }
+    }
+
+    public void Shoot()
+    {
+        //Vector3 aimDir = (CalculateTarget() - FiringPosition.position);
+        _photonView.RPC("ShootRPC", RpcTarget.All, CalculateTarget());
+    }
+
+    [PunRPC]
+    private void ShootRPC(Vector3 target, PhotonMessageInfo info)
     {
         if (!gameObject.activeInHierarchy)
         {
             return;
         }
+
+        Vector3 aimDir = target - FiringPosition.position;
+
         PlayHitSound();
         BulletProjectile bulletPrefab = BulletPrefab;
         Vector3 shootPoint;
