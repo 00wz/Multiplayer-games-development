@@ -118,6 +118,8 @@ namespace StarterAssets
 
 		private void ShootInput(bool newShootState)
         {
+			if (aim == false)
+				return;
 			shoot = newShootState;
         }
 

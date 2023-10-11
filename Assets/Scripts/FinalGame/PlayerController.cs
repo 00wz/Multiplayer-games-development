@@ -63,19 +63,17 @@ namespace StarterAssets
             }
         }
 
-        private void Awake()
+        private void Start()
         {
             // get a reference to our main camera
             if (_mainCamera == null)
             {
-                _mainCamera = GameObject.FindGameObjectWithTag("MainCamera");
+                _mainCamera = Camera.main.gameObject;//GameObject.FindGameObjectWithTag("MainCamera");
             }
-            Inputs.Instance.shoot = false;////
+            //Inputs.Instance.shoot = false;////
             Inputs.Instance.jump = false;////
-        }
 
-        private void Start()
-        {
+
             _controller = GetComponentInParent<CharacterController>();
             if (_controller == null) throw new Exception("CharacterController not found");
             _groundedObserver = GetComponentInParent<GroundedCheck>();

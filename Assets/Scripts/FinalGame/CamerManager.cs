@@ -34,12 +34,21 @@ public class CamerManager : MonoBehaviour
 
     [Tooltip("AimSensitivity")]
     public float AimSensitivity = 1f;
+    
+    [SerializeField]
+	private bool _aimingIsEnabled;
 
     // cinemachine
     private float _cinemachineTargetYaw;
     private float _cinemachineTargetPitch;
     private const float _threshold = 0.01f;
     private float _currentSensitivity;
+    private CameraState _cameraState;
+    private enum CameraState
+    {
+        Default,
+        Aim
+    }
     private bool IsCurrentDeviceMouse
     {
         get
@@ -51,19 +60,17 @@ public class CamerManager : MonoBehaviour
 #endif
         }
     }
-    
-	private bool _aimingIsEnabled;
 	public void AimingIsEnabled(bool value)
     {
         _aimingIsEnabled = value;
     }
     
-    /*
+    
     private void Awake()
     {
-        _currentSensitivity = Sensitivity;
+        SetState(CameraState.Default);
     }
-    */
+    
     public void SetTarget(Transform target)
     {
 		VirtualCamera.m_Follow = target;
@@ -75,9 +82,24 @@ public class CamerManager : MonoBehaviour
     {
         if (_aimingIsEnabled&& Inputs.Instance.aim)
         {
+            if(_cameraState==CameraState.Default)
+                SetState(CameraState.Aim);
+        }
+        else
+        {
+            if (_cameraState == CameraState.Aim)
+                SetState(CameraState.Default);
+        }
+    }
+
+    private void SetState(CameraState state)
+    {
+        if (state==CameraState.Aim)
+        {
             VirtualCameraAim.gameObject.SetActive(true);
             Crosshair.SetActive(true);
             _currentSensitivity = AimSensitivity;
+            //Inputs.Instance.shoot = false;
         }
         else
         {
@@ -85,6 +107,7 @@ public class CamerManager : MonoBehaviour
             Crosshair.SetActive(false);
             _currentSensitivity = Sensitivity;
         }
+        _cameraState = state;
     }
 
     private void LateUpdate()

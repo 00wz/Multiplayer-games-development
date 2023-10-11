@@ -69,8 +69,8 @@ public class ShootController : MonoBehaviour
         }
         PlayHitSound();
         BulletProjectile bulletPrefab = BulletPrefab;
-        RaycastHit raycastHit;
-        if(Physics.Raycast(FiringPosition.position,aimDir,out raycastHit, RAYCAST_DISTANCE, LayerMaskBulletTarget))
+        Vector3 shootPoint;
+        if(Physics.Raycast(FiringPosition.position,aimDir,out RaycastHit raycastHit, RAYCAST_DISTANCE, LayerMaskBulletTarget))
         {
             if (raycastHit.collider.TryGetComponent<IDamageable>(out IDamageable damageable))
             {
@@ -79,11 +79,16 @@ public class ShootController : MonoBehaviour
                 //if (PhotonNetwork.IsMasterClient)
                     damageable.TakeDamage(1, info.Sender,_photonView.ViewID);
             }
+            shootPoint = raycastHit.point;
+        }
+        else
+        {
+            shootPoint = FiringPosition.position + aimDir;
         }
 
         var bullet=Instantiate<BulletProjectile>(bulletPrefab, FiringPosition.position, 
             Quaternion.LookRotation(aimDir, Vector3.up));
-        bullet.Init(raycastHit.point);
+        bullet.Init(shootPoint);
     }
 
     private void PlayHitSound()
