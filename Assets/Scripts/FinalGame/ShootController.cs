@@ -4,9 +4,10 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Animations.Rigging;
 
 [RequireComponent(typeof(PhotonView))]
-public class ShootController : MonoBehaviour
+public class ShootController : MonoBehaviour, IPunObservable
 {
     [SerializeField]
     private LayerMask LayerMaskScreenRaycast;
@@ -31,6 +32,12 @@ public class ShootController : MonoBehaviour
     [SerializeField]
     private float AnimationChangeTime = 0.2f;
 
+    [SerializeField]
+    private Transform AimTarget;
+
+    [SerializeField]
+    private Rig Rig;
+
     private const float RAYCAST_DISTANCE= 100f;
     private PhotonView _photonView;
     private float _bulletSpeed;
@@ -38,6 +45,8 @@ public class ShootController : MonoBehaviour
     private GunState _gunState;
     private float _animAimWaight;
     private float _animationChangeSpeed;
+
+    private Vector3 m_NetworkTarget;
 
     enum GunState
     {
@@ -78,8 +87,19 @@ public class ShootController : MonoBehaviour
                 if (_gunState == GunState.Aiming)
                     SetState(GunState.Default);
             }
+
+            if (_gunState == GunState.Aiming)
+            {
+                m_NetworkTarget = CalculateTarget();
+            }
+        }
+
+        if (_gunState == GunState.Aiming)
+        {
+            AimTarget.position = m_NetworkTarget;
         }
         _animator.SetLayerWeight(1,Mathf.MoveTowards(_animator.GetLayerWeight(1),_animAimWaight,_animationChangeSpeed*Time.deltaTime) );
+        Rig.weight = _animator.GetLayerWeight(1);
     }
 
     private void SetState(GunState state)
@@ -104,19 +124,20 @@ public class ShootController : MonoBehaviour
     public void Shoot()
     {
         //Vector3 aimDir = (CalculateTarget() - FiringPosition.position);
-        _photonView.RPC("ShootRPC", RpcTarget.All, CalculateTarget());
+        _photonView.RPC("ShootRPC", RpcTarget.All);
     }
 
     [PunRPC]
-    private void ShootRPC(Vector3 target, PhotonMessageInfo info)
+    private void ShootRPC(PhotonMessageInfo info)
     {
         if (!gameObject.activeInHierarchy)
         {
             return;
         }
 
-        Vector3 aimDir = target - FiringPosition.position;
+        Vector3 aimDir = m_NetworkTarget - FiringPosition.position;
 
+        _animator.SetTrigger("Shoot");
         PlayHitSound();
         BulletProjectile bulletPrefab = BulletPrefab;
         Vector3 shootPoint;
@@ -145,5 +166,21 @@ public class ShootController : MonoBehaviour
     {
         var index = UnityEngine.Random.Range(0, ShootAudioClips.Length);
         AudioSource.PlayClipAtPoint(ShootAudioClips[index], transform.position, AudioVolume);
+    }
+
+    public void OnPhotonSerializeView(PhotonStream stream, PhotonMessageInfo info)
+    {
+        if (_gunState != GunState.Aiming)
+            return;
+        // Write
+        if (stream.IsWriting)
+        {
+                stream.SendNext(m_NetworkTarget);
+        }
+        // Read
+        else
+        {
+                this.m_NetworkTarget = (Vector3)stream.ReceiveNext();
+        }
     }
 }

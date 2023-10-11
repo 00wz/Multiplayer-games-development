@@ -712,6 +712,7 @@ MonoBehaviour:
   observableSearch: 2
   ObservedComponents:
   - {fileID: 1164677513819878826}
+  - {fileID: 3787737974700994451}
   sceneViewId: 0
   InstantiationId: 0
   isRuntimeInstantiated: 0
@@ -785,6 +786,8 @@ MonoBehaviour:
   - {fileID: 8300000, guid: 71b4a59a62b9f1344b60f7195f6154bc, type: 3}
   AudioVolume: 0.4
   AnimationChangeTime: 0.2
+  AimTarget: {fileID: 999512390559881723}
+  Rig: {fileID: 8810734410681572317}
 --- !u!114 &2750798433160171103
 MonoBehaviour:
   m_ObjectHideFlags: 0

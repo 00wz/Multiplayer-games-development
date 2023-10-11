@@ -9,9 +9,6 @@ EditorBuildSettings:
     path: Assets/Scenes/FinalGame/PhotonLobby.unity
     guid: ed1307fe0f5b0a748b4d83bb1c65bfa2
   - enabled: 1
-    path: Assets/Scenes/FinalGame/FirstGameScene.unity
-    guid: 8cb084f83e32a124e83358c2ad47b07b
-  - enabled: 1
     path: Assets/Scenes/FinalGame/GameScene.unity
     guid: 6549790a37738d04885489c78153c50f
   m_configObjects:
